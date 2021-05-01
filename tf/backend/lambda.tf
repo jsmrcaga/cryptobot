@@ -24,6 +24,29 @@ resource "aws_iam_role" "crypto_bot_role" {
 EOF
 }
 
+# EnableCloudwatch logs
+resource "aws_iam_role_policy" "lambda_role_logs_policy" {
+  role   = aws_iam_role.crypto_bot_role.id
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:*:*:*"
+      ]
+    }
+  ]
+}
+POLICY
+}
+
 // To set in environment use TF_VAR_xxxxxx
 variable "telegram_bot_token" {
     type = string
