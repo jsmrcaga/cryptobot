@@ -3,9 +3,11 @@ const Bot = require('./bot');
 class Response {
 	constructor({ status=200, body, headers={'Content-Type': 'application/json'} }) {
 		this.statusCode = status;
-		this.body = Buffer.from(body).toString('base64');
 		this.isBase64Encoded = true;
 		this.headers = headers;
+
+		const str_body = body instanceof Object ? JSON.stringify(body) : body;
+		this.body = Buffer.from(str_body).toString('base64');
 	}
 }
 
