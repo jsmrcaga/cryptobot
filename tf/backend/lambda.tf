@@ -67,6 +67,23 @@ resource "aws_apigatewayv2_api" "crypto_bot_api" {
     target = aws_lambda_function.crypto_bot_lambda.arn
 }
 
+resource "aws_apigatewayv2_integration" "crypto_api_lambda_integration" {
+    integration_type = "AWS_PROXY"
+
+    api_id = aws_apigatewayv2_api.crypto_bot_api.id
+    integration_method = "POST"
+    integration_uri = aws_lambda_function.crypto_bot_lambda.invoke_arn
+
+    description = "Manual Lambda integration"
+    payload_format_version = "2.0"
+}
+
+resource "aws_apigatewayv2_route" "crypto_bot_lambda_route_default" {
+    route_key = "ANY /"
+    api_id = aws_apigatewayv2_api.crypto_bot_api.id
+    target = "integrations/${aws_apigatewayv2_integration.crypto_api_lambda_integration.id}"
+}
+
 
 // Cloudwatch events
 resource "aws_cloudwatch_event_rule" "scheduled_lambda" {
@@ -75,7 +92,25 @@ resource "aws_cloudwatch_event_rule" "scheduled_lambda" {
     schedule_expression = "rate(1 hour)"
 }
 
-resource "aws_cloudwatch_event_target" "sns" {
+resource "aws_cloudwatch_event_target" "crypto_bot_schedule_target" {
     rule      = aws_cloudwatch_event_rule.scheduled_lambda.name
     arn       = aws_lambda_function.crypto_bot_lambda.arn
+}
+
+
+/*********
+    LAMBDA PERMISSIONS
+*********/
+resource "aws_lambda_permission" "api_permission" {
+    action = "lambda:InvokeFunction"
+    function_name = "crypto_bot"
+    principal = "apigateway.amazonaws.com"
+    source_arn = "${aws_apigatewayv2_api.crypto_bot_api.execution_arn}/*/*/"
+}
+
+resource "aws_lambda_permission" "event_bridge_permission" {
+    action = "lambda:InvokeFunction"
+    function_name = "crypto_bot"
+    principal = "events.amazonaws.com"
+    source_arn = aws_cloudwatch_event_rule.scheduled_lambda.arn
 }
