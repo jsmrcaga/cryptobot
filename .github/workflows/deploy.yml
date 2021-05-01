@@ -21,7 +21,7 @@ jobs:
           NODE_ENV: production
 
       # Deploy
-      - uses: ./.github/actions
+      - uses: jsmrcaga/action-easy-lambda-deploy@v0.0.2
         name: Update lambda code
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
