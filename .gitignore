@@ -1,0 +1,17 @@
+# Specific
+.env
+
+# Node
+node_modules/
+
+
+# TF
+tf/backend/aws.cred
+tf/backend/.env
+tf/backend/.terraform
+
+tf/**/terraform.tfstate*
+tf/**/*.plan
+
+# Deployments
+**/deploy.zip
