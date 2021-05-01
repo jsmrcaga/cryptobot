@@ -18,7 +18,9 @@ function handle_lambda(event, context) {
 
 	// "source": "aws.events" means CloudWatch Events
 	if(source && source === 'aws.events') {
-		return Bot.inspect_prices();
+		return Bot.inspect_prices().then(() => {
+			console.log('Messages sent!');
+		});
 	}
 
 	if(method !== 'POST') {
@@ -34,10 +36,12 @@ function handle_lambda(event, context) {
 	let data = isBase64Encoded ? Buffer.from(body, 'base64') : body;
 	data = JSON.parse(data);
 
-	return Bot.handle_message(data).then(result => {
-		return new Response({
-			body: result
-		});
+	Bot.handle_message(data).then(() => {
+		// Wait until telegram messages have been scheduled
+		return Promise.resolve(new Response({
+			status: 200,
+			body: 'OK'
+		}));
 	});
 }
 

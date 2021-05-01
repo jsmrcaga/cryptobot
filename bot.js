@@ -67,7 +67,7 @@ class Bot {
 		const chat_id = sender_chat ? sender_chat.id : chat.id;
 
 		const handler = new Handler({ chat_id, message });
-		handler.handle_message(message).then(response_messages => {
+		return handler.handle_message(message).then(response_messages => {
 			return this.queue_messages(response_messages);	
 		}).catch(e => {
 			console.error(e);
@@ -96,7 +96,7 @@ class Bot {
 	}
 
 	inspect_prices() {
-		bittrex.tickers().then(products => {
+		return bittrex.tickers().then(products => {
 			return products.filter(product => {
 				const [, payment] = product.symbol.split('-');
 				return payment.toUpperCase() === 'EUR';
