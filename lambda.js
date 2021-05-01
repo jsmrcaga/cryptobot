@@ -14,14 +14,14 @@ class Response {
 function handle_lambda(event, context) {
 	// If shceduled: cehck for prices and send potential buys to bot
 	// If POST apigateway: check for message and do whatever it wants
-	const { source, httpMethod, path, headers, queryStringParameters, body, isBase64Encoded } = event;
+	const { source, body, isBase64Encoded, requestContext: { http: { method }}} = event;
 
 	// "source": "aws.events" means CloudWatch Events
 	if(source && source === 'aws.events') {
 		return Bot.inspect_prices();
 	}
 
-	if(httpMethod !== 'POST') {
+	if(method !== 'POST') {
 		// Respond with 400
 		return Promise.resolve(new Response({
 			status: 405,

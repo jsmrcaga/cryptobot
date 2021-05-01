@@ -13,8 +13,17 @@ const Commands = {
 	webhook: (args) => {
 		const [url] = args;
 		console.log(`Registering webhok ${url}`);
-		telegram.set_webhook(url).then(() => {
-			console.log('OK!');
+		telegram.set_webhook(url).then((result) => {
+			console.log('OK!', result);
+		}).catch(e => {
+			console.error(e);
+		});
+	},
+
+	'get-webhook': () => {
+		console.log(`Getting webhok info`);
+		telegram.get_webhook().then((result) => {
+			console.log(result);
 		}).catch(e => {
 			console.error(e);
 		});
