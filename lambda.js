@@ -29,7 +29,7 @@ function handle_lambda(event, context) {
 		}));
 	}
 
-	let data = isBase64Encoded ? Buffer.from(data, 'base64') : data;
+	let data = isBase64Encoded ? Buffer.from(body, 'base64') : body;
 	data = JSON.parse(data);
 
 	return Bot.handle_message(data).then(result => {

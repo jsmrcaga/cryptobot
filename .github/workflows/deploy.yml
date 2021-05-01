@@ -1,0 +1,34 @@
+name: Update lambda
+
+on:
+  # Manual dispatch
+  workflow_dispatch:
+  # If we make a release
+  release:
+    types: ["published"]
+
+jobs:
+  update_lambda:
+    name: 'Pull code, install & update lambda'
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm i
+        env:
+          NODE_ENV: production
+
+      # Deploy
+      - uses: ./.github/actions
+        name: Update lambda code
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          function_name: crypto_bot
+          region: eu-west-3
+          # No need to upload dev utilities
+          zip_files: "lambda.js bot.js node_modules lib"
+
