@@ -6,6 +6,9 @@ on:
   # If we make a release
   release:
     types: ["published"]
+  push:
+    branches:
+      - master
 
 jobs:
   update_lambda:
@@ -30,5 +33,5 @@ jobs:
           function_name: crypto_bot
           region: eu-west-3
           # No need to upload dev utilities
-          zip_files: "lambda.js bot.js node_modules lib"
+          zip_files: "lambda.js bot.js node_modules lib bot"
 
