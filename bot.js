@@ -1,18 +1,7 @@
 const bittrex = require('./lib/bittrex/bittrex');
 const { telegram, Telegram: { Message }} = require('./lib/telegram/telegram');
 
-const Commands = {
-	price: (message) => {
-		const item = message.text.replace('/price', '').trim();
-		return bittrex.ticker({
-			product_id: `${item.toUpperCase()}-EUR`
-		}).then(ticker => {
-			return `💵 Price for ${item.toUpperCase()}: ${ticker.lastTradeRate}€`;
-		}).catch(e => {
-			return `Could not get price for "${item}"`;
-		});
-	}
-};
+const Commands = require('./bot/commands');
 
 class Handler {
 	constructor({ chat_id, message }) {
@@ -54,16 +43,16 @@ class Handler {
 	}
 
 	handle_command(command) {
-		if(!(command in Commands)) {
-			return `No command named ${command}`;
-		}
-
-		return Promise.resolve(Commands[command](this.message));
+		return Commands.handle(command, this.message);
 	}
 }
 
 class Bot {
 	handle_message({ message: { chat, sender_chat, ...message } }) {
+		if(!chat && !sender_chat) {
+			return;
+		}
+
 		const chat_id = sender_chat ? sender_chat.id : chat.id;
 
 		const handler = new Handler({ chat_id, message });
@@ -92,6 +81,8 @@ class Bot {
 
 		return telegram.send_message(first).then(() => {
 			return this.queue_messages(new_messages);
+		}).catch(e => {
+			console.error('Telegram error');
 		});
 	}
 
