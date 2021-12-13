@@ -109,16 +109,16 @@ resource "aws_apigatewayv2_route" "crypto_bot_lambda_route_default" {
 
 
 // Cloudwatch events
-resource "aws_cloudwatch_event_rule" "scheduled_lambda" {
-    name        = "schedule_lambda"
-    description = "Schedule lambda price checker, once per hour"
-    schedule_expression = "cron(0 9-17/2 * * ? *)"
-}
+# resource "aws_cloudwatch_event_rule" "scheduled_lambda" {
+#     name        = "schedule_lambda"
+#     description = "Schedule lambda price checker, once per hour"
+#     schedule_expression = "cron(0 9-17/2 * * ? *)"
+# }
 
-resource "aws_cloudwatch_event_target" "crypto_bot_schedule_target" {
-    rule      = aws_cloudwatch_event_rule.scheduled_lambda.name
-    arn       = aws_lambda_function.crypto_bot_lambda.arn
-}
+# resource "aws_cloudwatch_event_target" "crypto_bot_schedule_target" {
+#     rule      = aws_cloudwatch_event_rule.scheduled_lambda.name
+#     arn       = aws_lambda_function.crypto_bot_lambda.arn
+# }
 
 
 /*********
@@ -131,9 +131,9 @@ resource "aws_lambda_permission" "api_permission" {
     source_arn = "${aws_apigatewayv2_api.crypto_bot_api.execution_arn}/*/*/"
 }
 
-resource "aws_lambda_permission" "event_bridge_permission" {
-    action = "lambda:InvokeFunction"
-    function_name = "crypto_bot"
-    principal = "events.amazonaws.com"
-    source_arn = aws_cloudwatch_event_rule.scheduled_lambda.arn
-}
+# resource "aws_lambda_permission" "event_bridge_permission" {
+#     action = "lambda:InvokeFunction"
+#     function_name = "crypto_bot"
+#     principal = "events.amazonaws.com"
+#     source_arn = aws_cloudwatch_event_rule.scheduled_lambda.arn
+# }
